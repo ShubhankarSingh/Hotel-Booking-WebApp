@@ -1,4 +1,14 @@
 package com.project.bookMyHotel.repository;
 
-public interface RoomRepository {
+import com.project.bookMyHotel.model.Room;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+
+public interface RoomRepository extends JpaRepository<Room, Long> {
+
+    @Query("SELECT DISTINCT r.roomType FROM Room r")
+    List<String> findDistinctRoomTypes();
+
 }
