@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { getAllRooms } from "../utils/ApiFunctions"
+import { deleteRoom, getAllRooms } from "../utils/ApiFunctions"
 import { Col, Row } from "react-bootstrap"
 import RoomFilter from '../common/RoomFilter'
 import RoomPaginator from '../common/RoomPaginator'
+import {FaEye, FaTrashAlt, FaEdit, FaPlus} from 'react-icons/fa'
+import {Link} from 'react-router-dom'
 
 const ExistingRooms = () => {
 
@@ -41,6 +43,26 @@ const ExistingRooms = () => {
     setCurrentPage(1)
   }, [rooms, selectedRoomType])
 
+  const handleDelete = async(roomId) =>{
+    try{
+
+        const result  = await deleteRoom(roomId)
+        if(result === ""){
+            setSucessMessage(`Room No ${roomId} was deleted`)
+            fetchRooms()
+        }else{
+            console.error(`Error deleting room: ${result.message}`)
+        }
+
+    }catch(error){
+        setErrorMessage(error.message)
+    }
+    setTimeout(()=>{
+        setSucessMessage("")
+        setErrorMessage("")
+    },3000)
+  }
+
   const handlePaginationClick = (pageNumber) =>{
     setCurrentPage(pageNumber)
   }
@@ -61,11 +83,17 @@ const ExistingRooms = () => {
     ): (
         <>
         <section className='mt-5 mb-5 container'>
-            <div className='d-flex justify-content-center mb-3 mt-5'>
+            <div className='d-flex justify-content-between mb-3 mt-5'>
                 <h2>Existing Rooms</h2>
             </div>
             <Col md={6} className="mb-3 mb-md-0">
                 <RoomFilter data={rooms} setFilteredData={setFilteredRooms}/>
+            </Col>
+
+            <Col md={6} className="d-flex justify-content-end">
+                <Link to={"/add-room"}>
+                    <FaPlus/> Add Room
+                </Link>
             </Col>
 
             <table className='table table-bordered table-hover'>
@@ -83,9 +111,20 @@ const ExistingRooms = () => {
                             <td>{room.id}</td>
                             <td>{room.roomType}</td>
                             <td>{room.roomPrice}</td>
-                            <td>
-                                <button>View / Edit</button>
-                                <button>Delete</button>
+                            <td className='gap-2'>
+                                <Link to={`/edit-room/${room.id}`} className='gap-2'>
+                                    <span className='btn btn-info btn-sm'>
+                                        <FaEye/>
+                                    </span>
+                                    <span className='btn btn-warning btn-sm'>
+                                        <FaEdit/>
+                                    </span>
+                                </Link>
+                                <button 
+                                    className='btn btn-danger btn-sm'
+                                    onClick={() => handleDelete(room.id)}>  
+                                    <FaTrashAlt/>
+                                </button>
                             </td>
                         </tr>
                     ))}
@@ -93,8 +132,7 @@ const ExistingRooms = () => {
             </table>
             <RoomPaginator currentPage={currentPage} 
             totalPages={calculateTotalPages(filteredRooms, roomsPerPage, rooms)}
-            onChange={handlePaginationClick}
-
+            onPageChange={handlePaginationClick}
             />
         </section>
         </>

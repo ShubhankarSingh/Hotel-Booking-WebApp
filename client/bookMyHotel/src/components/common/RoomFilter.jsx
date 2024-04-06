@@ -9,8 +9,8 @@ const RoomFilter = ({data, setFilteredData}) => {
     const filteredRooms = data.filter((room) => 
         room.roomType.toLowerCase()
         .includes(selectedRoomType.toLowerCase()))
-        setFilteredData(filteredRooms)
-
+    
+    setFilteredData(filteredRooms)
   }
 
   const clearFilter = () =>{

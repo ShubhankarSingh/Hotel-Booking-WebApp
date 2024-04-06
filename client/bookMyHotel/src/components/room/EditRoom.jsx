@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
-import { addRoom } from '../utils/ApiFunctions'
-import RoomTypeSelector from '../common/RoomTypeSelector'
-import {Link} from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { getRoomById, updateRoom } from '../utils/ApiFunctions'
+import { Link, useParams } from 'react-router-dom'
 
-const AddRoom = () => {
+const EditRoom = () => {
 
-  const [newRoom, setNewRoom] = useState({
-    photo: null,
+  const [room, setRoom] = useState({
+    photo: "",
     roomType: "",
     roomPrice: ""
   })
@@ -14,50 +13,54 @@ const AddRoom = () => {
   const [imagePreview, setImagePreview] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
+  const {roomId} = useParams()
 
-  const handleRoomInputChange = (e) =>{
-    const name = e.target.name
-    let value = e.target.value
-    if(name === "roomPrice"){
-      if(!isNaN(value)){
-        value = parseInt(value)
-      }else{
-        value = ""
-      }
-    }
-    setNewRoom({...newRoom, [name]: value})
+  const handleInputChange = (e) =>{
+    const {name, value } = e.target 
+    setRoom({...room, [name]: value})
   }
-
 
   const handleImageChange = (e) =>{
     const selectedImage = e.target.files[0]
-    setNewRoom({...newRoom, photo: selectedImage})
+    setRoom({...room, photo: selectedImage})
     setImagePreview(URL.createObjectURL(selectedImage))
   }
 
+  useEffect(() => {
+		const fetchRoom = async () => {
+			try {
+				const roomData = await getRoomById(roomId)
+				setRoom(roomData)
+				setImagePreview(roomData.photo)
+			} catch (error) {
+				console.error(error)
+			}
+		}
+
+		fetchRoom()
+	}, [roomId])
+
+
   const handleSubmit = async (e) =>{
     e.preventDefault()
+    
     try{
-
-      const success = await addRoom(newRoom.photo, newRoom.roomType, newRoom.roomPrice)
-      if(success !== undefined){
-        setSuccessMessage("A new room was added successfully")
-        setNewRoom({photo: null, roomType:"", roomPrice: ""})
-        setImagePreview("")
+      const response = await updateRoom(roomId, room)
+      if(response.status === 200){
+        setSuccessMessage("Room updated successfully")
+        const updatedRoomData = await getRoomById(roomId)
+        setRoom(updatedRoomData)
+        setImagePreview(updatedRoomData.photo)
         setErrorMessage("")
       }else{
-        setErrorMessage("Error adding new room")
+        setErrorMessage("Error updating room")
       }
 
     }catch(error){
+      console.error(error)
       setErrorMessage(error.message)
     }
-    setTimeout(()=>{
-      setSuccessMessage("")
-      setErrorMessage("")
-    },3000)
   }
-
 
   return (
     
@@ -65,7 +68,7 @@ const AddRoom = () => {
       <section className="container mt-5 mb-5">
         <div className="row justify-content-center">
           <div className="col-md-8 col-lg-6">
-            <h2 className="mt-5 mb-2">Add a new Room</h2>
+            <h2 className="mt-5 mb-2">Edit Room</h2>
             {successMessage && (
               <div className="alert alert-success fade show">{successMessage}</div>
             )}
@@ -77,11 +80,14 @@ const AddRoom = () => {
                 <label htmlFor="roomType" className="form-label">
                   Room Type
                 </label>
-                <div>
-                  <RoomTypeSelector handleRoomInputChange={handleRoomInputChange} 
-                   newRoom={newRoom}
-                  />
-                </div>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="roomType"
+                  name="roomType"
+                  value={room.roomType}
+                  onChange={handleInputChange}
+							/>
               </div>
 
               <div className="mb-3">
@@ -89,18 +95,19 @@ const AddRoom = () => {
                   Room Price
                 </label>
                 <input
+                  type='number'
                   className="form-control"
                   required
                   id="roomPrice"
                   name="roomPrice"
-                  value={newRoom.roomPrice}
-                  onChange={handleRoomInputChange}
+                  value={room.roomPrice}
+                  onChange={handleInputChange}
                 />
               </div>
 
               <div className="mb-3">
                 <label htmlFor="photo" className="form-label">
-                  Room Photo
+                  Photo
                 </label>
                 <input
                   className="form-control"
@@ -111,8 +118,8 @@ const AddRoom = () => {
                   onChange={handleImageChange}
                 />
                 {imagePreview && (
-                  <img src={imagePreview} 
-                  alt="Preview Room Photo"
+                  <img src={`data:image/jpeg;base64,${imagePreview}`} 
+                  alt="Preview Room"
                   style={{maxWidth: "400px", maxHeight: "400px"}}
                   className="mb-3"
                   />
@@ -120,24 +127,17 @@ const AddRoom = () => {
               </div>
               
               <div className="d-grid d-md-flex mt-2">
-                <Link to={"/existing-rooms"} className="btn btn-outline-info">
-                  Back
+                <Link to={"/existing-rooms"} className="btn btn-outline-info ml-5">
+                  back
                 </Link>
-              
-                <button className="btn btn-outline-primary ml-5">Save Room</button>
+                <button className="btn btn-outline-warning" type='submit'>Edit Room</button>
               </div>
-          
             </form>
-
           </div>
         </div>
-
-
       </section>
-
     </>
-
   )
 }
 
-export default AddRoom
+export default EditRoom
