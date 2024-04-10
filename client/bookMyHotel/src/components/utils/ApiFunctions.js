@@ -38,7 +38,6 @@ export async function getRoomTypes(){
 
 // This functions gets all rooms from the DB
 export async function getAllRooms(){
-    console.log("Inside get all rooms")
     try{
 
         const result = await api.get("/rooms/all-rooms")
@@ -87,4 +86,57 @@ export async function getRoomById(roomId){
         throw new Error(`Error fetching room ${error.message}`)
     }
 
+}
+
+// This methods saves a new booking to the DB 
+export async function bookRoom(roomId, booking){
+   
+    try{
+        const response = await api.post(`/bookings/room/${roomId}/booking`, booking)
+        return response.data
+    }catch(error){
+        if(error.response && error.response.data){
+            throw new Error(error.response.data)
+        }else{
+            throw new Error(`Error booking room : ${error.message}`)
+        }
+    }
+}
+
+// This method gets all bookings from the db
+export async function getAllBookings(){
+    try{
+        const result = await api.get("bookings/all-bookings")
+        return result.data
+    }catch(error){
+        throw new Error(`Error fetching bookings : ${error.message}`)
+    }
+}
+
+
+// This function get booking by the confirmation code
+export async function getBookingByConfirmationCode(confirmationCode){
+
+    try{
+        const result = await api.get(`/bookings/confirmation/${confirmationCode}`)
+        return result.data
+    }catch(error){
+        if(error.response && error.response.data){
+            throw new Error(error.response.data)
+        }else{
+            throw new Error(`Error finding booking : ${error.message}`)
+        }
+    }
+
+}
+
+
+//This function cancels booking
+export async function cancelBooking(bookingId){
+    try{
+        const result = await api.delete(`/bookings/booking/${bookingId}/delete`)
+        return result.data
+    }catch(error){
+        throw new Error(`Error cancelling booking : ${error.message}`)
+    }
 }
