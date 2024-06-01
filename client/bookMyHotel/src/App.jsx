@@ -19,6 +19,7 @@ import Admin from './components/admin/Admin';
 import Checkout from './components/bookings/Checkout'
 import BookingSuccess from './components/bookings/BookingSuccess';
 import Bookings from './components/bookings/Bookings';
+import FindBooking from './components/bookings/FindBooking';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -30,7 +31,6 @@ function App() {
       <Navbar/>
       
           <Routes>
-          
             <Route path="/" element={<Home/>}/>
             <Route path="/edit-room/:roomId" element={<EditRoom/>}/>
             <Route path="/existing-rooms" element={<ExistingRooms/>}/>
@@ -40,6 +40,7 @@ function App() {
             <Route path="/admin" element={<Admin/>}/>
             <Route path="/booking-success" element={<BookingSuccess/>}/>
             <Route path="/existing-bookings" element={<Bookings/>}/>
+            <Route path="/find-booking" element={<FindBooking/>}/>
           </Routes>
       
       </BrowserRouter>

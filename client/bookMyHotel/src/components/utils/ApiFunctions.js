@@ -121,6 +121,9 @@ export async function getBookingByConfirmationCode(confirmationCode){
         const result = await api.get(`/bookings/confirmation/${confirmationCode}`)
         return result.data
     }catch(error){
+        // console.log("Inside get booking by CC error")
+        // console.log("Error res: " + error.response.status)
+        // console.log("Error res data: " + error.response.data)
         if(error.response && error.response.data){
             throw new Error(error.response.data)
         }else{
@@ -130,7 +133,6 @@ export async function getBookingByConfirmationCode(confirmationCode){
 
 }
 
-
 //This function cancels booking
 export async function cancelBooking(bookingId){
     try{
@@ -139,4 +141,15 @@ export async function cancelBooking(bookingId){
     }catch(error){
         throw new Error(`Error cancelling booking : ${error.message}`)
     }
+}
+
+
+export async function getAvailableRooms(checkInDate, checkOutDate, roomType){
+    
+    const results = await api.get(
+        `/rooms/available-rooms?checkInDate=${checkInDate}
+        &checkOutDate=${checkOutDate}&roomType=${roomType}`
+        )
+
+    return results
 }

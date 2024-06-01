@@ -48,7 +48,7 @@ const BookingsTable = ({bookingInfo, handleBookingCancellation}) => {
             </thead>
             <tbody className="text-center">
 					{filteredBookings.map((booking, index) => (
-						<tr key={booking.id}>
+						<tr key={booking.bookingId}>
 							<td>{index + 1}</td>
 							<td>{booking.bookingId}</td>
 							<td>{booking.room.id}</td>

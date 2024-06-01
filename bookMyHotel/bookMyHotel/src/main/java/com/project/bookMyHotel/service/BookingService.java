@@ -1,6 +1,7 @@
 package com.project.bookMyHotel.service;
 
 import com.project.bookMyHotel.exception.InvalidBookingRequestException;
+import com.project.bookMyHotel.exception.ResourceNotFoundException;
 import com.project.bookMyHotel.model.BookedRoom;
 import com.project.bookMyHotel.model.Room;
 import com.project.bookMyHotel.repository.BookingRepository;
@@ -51,7 +52,8 @@ public class BookingService implements IBookingService{
 
     @Override
     public BookedRoom findByBookingConfirmationCode(String confirmationCode) {
-        return bookingRepository.findByBookingConfirmationCode(confirmationCode);
+        return bookingRepository.findByBookingConfirmationCode(confirmationCode)
+                .orElseThrow(()-> new ResourceNotFoundException("No booking found with booking code: " + confirmationCode));
     }
 
     // existingBookings.stream(): A Stream is a sequence of elements that supports various operations such as filtering, mapping, and reduction.
