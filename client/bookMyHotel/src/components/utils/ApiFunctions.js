@@ -145,11 +145,12 @@ export async function cancelBooking(bookingId){
 
 
 export async function getAvailableRooms(checkInDate, checkOutDate, roomType){
-    
-    const results = await api.get(
-        `/rooms/available-rooms?checkInDate=${checkInDate}
-        &checkOutDate=${checkOutDate}&roomType=${roomType}`
-        )
 
-    return results
+    try{
+        const results = await api.get(`/rooms/available-rooms?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&roomType=${roomType}`)
+        return results
+    }catch(error){
+        throw new Error(`No rooms available : ${error.message}`)
+    }
+
 }

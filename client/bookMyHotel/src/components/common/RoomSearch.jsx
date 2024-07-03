@@ -18,7 +18,7 @@ const RoomSearch = () => {
   const[isLoading, setIsLoading] = useState(false)
 
   const handleInputChange = (e) =>{
-    const [name, value] = e.target
+    const {name, value} = e.target
     setSearchQuery({...searchQuery, [name]:value})
     const checkIn = moment(searchQuery.checkInDate)
     const checkOut = moment(searchQuery.checkOutDate)
@@ -48,6 +48,7 @@ const RoomSearch = () => {
         return
     }
     setIsLoading(true)
+    console.log("Inside search room")
     getAvailableRooms(searchQuery.checkInDate, 
         searchQuery.checkOutDate, searchQuery.roomType)
         .then((response)=>{
@@ -63,6 +64,8 @@ const RoomSearch = () => {
             setIsLoading(false)
         })    
   }
+
+  
   
   return (
     <>
@@ -109,9 +112,9 @@ const RoomSearch = () => {
                     </Col>
                 </Row>
             </Form>
-
+            
             {isLoading ? (
-                <p className="mt-4">Finding availble rooms....</p>
+                <p className="mt-4">Finding available rooms....</p>
             ) : availableRooms ? (
                 <RoomSearchResults results={availableRooms} onClearSearch={handleClearSearch} />
             ) : (

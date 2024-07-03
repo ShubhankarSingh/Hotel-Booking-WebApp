@@ -17,6 +17,10 @@ const RoomSearchResults = ({results, onClearSearch}) => {
   const endIndex = startIndex + resultsPerPage
   const paginatedResult = results.slice(startIndex, endIndex)
 
+  results.map((rooms)=>{
+    console.log(rooms)
+  })
+
   return 
   (
     <>
@@ -42,7 +46,7 @@ const RoomSearchResults = ({results, onClearSearch}) => {
                 </Row>
             </> 
             ):( 
-                <p></p>
+                <p>Hello</p>
         )}
     </>
   )
