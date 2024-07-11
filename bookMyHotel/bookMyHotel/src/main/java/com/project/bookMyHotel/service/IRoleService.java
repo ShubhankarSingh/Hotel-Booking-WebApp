@@ -11,7 +11,7 @@ public interface IRoleService {
 
     Role createRole(Role theRole);
 
-    void deleteRole(Long id);
+    void deleteRole(Long roleId);
 
     Role findByName(String name);
 
@@ -19,5 +19,5 @@ public interface IRoleService {
 
     User assignRoleToUser(Long userId, Long roleId);
 
-    Role removeAllUsersFromRole(Long userId);
+    Role removeAllUsersFromRole(Long roleId);
 }

@@ -1,43 +1,86 @@
 package com.project.bookMyHotel.service;
 
+import com.project.bookMyHotel.exception.RoleAlreadyExistsException;
+import com.project.bookMyHotel.exception.UserAlreadyExistsException;
 import com.project.bookMyHotel.model.Role;
 import com.project.bookMyHotel.model.User;
+import com.project.bookMyHotel.repository.RoleRepository;
+import com.project.bookMyHotel.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
+@Service
+@RequiredArgsConstructor
 public class RoleService implements IRoleService{
+
+    private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
+
     @Override
     public List<Role> getRoles() {
-        return null;
+        return roleRepository.findAll();
     }
 
     @Override
     public Role createRole(Role theRole) {
-        return null;
+        String roleName = "ROLE_" + theRole.getName().toUpperCase();
+        Role role = new Role(roleName);
+        if(roleRepository.existsByName(role)){
+            throw new RoleAlreadyExistsException(theRole.getName()+" role already exists");
+
+        }
+
+        return roleRepository.save(role);
     }
 
     @Override
-    public void deleteRole(Long id) {
-
+    public void deleteRole(Long roleId) {
+        this.removeAllUsersFromRole(roleId);
+        roleRepository.deleteById(roleId);
     }
 
     @Override
     public Role findByName(String name) {
-        return null;
+        return roleRepository.findByName(name).get();
     }
 
     @Override
     public User removeUserFromRole(Long userId, Long roleId) {
-        return null;
+        Optional<User> user = userRepository.findById(userId);
+        Optional<Role> role =  roleRepository.findById(roleId);
+
+        if(role.isPresent() && role.get().getUsers().contains(user.get())){
+            role.get().removeUserFromRole(user.get());
+            roleRepository.save(role.get());
+            return user.get();
+        }
+
+        throw new UsernameNotFoundException("User not found");
     }
 
     @Override
     public User assignRoleToUser(Long userId, Long roleId) {
-        return null;
+        Optional<User> user = userRepository.findById(userId);
+        Optional<Role> role =  roleRepository.findById(roleId);
+
+        if(user.isPresent() && user.get().getRoles().contains(role.get())){
+            throw new UserAlreadyExistsException(user.get().getFirstName()+" is already assigned to the " + role.get().getName() + " role");
+        }
+        if(role.isPresent()){
+            role.get().assignRoleToUser(user.get());
+            roleRepository.save(role.get());
+        }
+        return user.get();
     }
 
     @Override
-    public Role removeAllUsersFromRole(Long userId) {
-        return null;
+    public Role removeAllUsersFromRole(Long roleId) {
+        Optional<Role> role = roleRepository.findById(roleId);
+        role.get().removeAllUsersFromRole();
+        return roleRepository.save(role.get());
     }
 }
