@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -39,7 +38,7 @@ public class Role {
         this.getUsers().remove(user);
     }
 
-    public Role removeAllUsersFromRole(){
+    public void removeAllUsersFromRole(){
         if(getUsers() != null){
             List<User> roleUsers = this.getUsers().stream().toList();
             roleUsers.forEach(this :: removeUserFromRole);
