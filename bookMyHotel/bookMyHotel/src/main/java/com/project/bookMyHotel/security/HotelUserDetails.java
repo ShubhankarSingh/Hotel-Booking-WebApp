@@ -7,6 +7,12 @@ import java.util.Collection;
 
 public class HotelUserDetails implements UserDetails {
 
+    private Long id;
+    private String email;
+    private String password;
+
+    private Collection<GrantedAuthority> authorities;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
