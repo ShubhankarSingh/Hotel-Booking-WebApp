@@ -154,3 +154,11 @@ export async function getAvailableRooms(checkInDate, checkOutDate, roomType){
     }
 
 }
+
+export async function getUsers(){
+    try{
+
+    }catch(error){
+
+    }
+}
